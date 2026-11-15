@@ -4,6 +4,7 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 from .auth import admin_required
 from .db import get_db, now
 from .items import ITEM_STATUS, get_item
+from .orders import STATUS_LABELS as ORDER_STATUS_LABELS
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -23,7 +24,8 @@ def index():
         ).fetchone()[0],
     }
     pending_items = conn.execute(
-        "SELECT * FROM item WHERE status = 'pending' ORDER BY created_at, id"
+        "SELECT i.*, u.nickname AS seller_name FROM item i JOIN user u ON u.id = i.seller_id"
+        " WHERE i.status = 'pending' ORDER BY i.created_at, i.id"
     ).fetchall()
     orders = conn.execute(
         "SELECT o.*, i.title AS item_title FROM trade_order o JOIN item i ON i.id = o.item_id"
@@ -35,6 +37,7 @@ def index():
         pending_items=pending_items,
         orders=orders,
         status_labels=ITEM_STATUS,
+        order_status_labels=ORDER_STATUS_LABELS,
     )
 
 

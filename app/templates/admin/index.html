@@ -18,7 +18,7 @@
         <td><a href="{{ url_for('items.detail', item_id=item['id']) }}">{{ item['title'] }}</a></td>
         <td>{{ item['category'] }}</td>
         <td>{{ item['price'] | yuan }}</td>
-        <td>{{ item['seller_id'] }}</td>
+        <td>{{ item['seller_name'] }}</td>
         <td>
           <form method="post" action="{{ url_for('admin.approve', item_id=item['id']) }}" class="inline">
             <button class="btn" type="submit">通过</button>
@@ -45,7 +45,7 @@
       <tr>
         <td>#{{ order['id'] }}</td>
         <td>{{ order['item_title'] }}</td>
-        <td>{{ status_labels[order['status']] if order['status'] in status_labels else order['status'] }}</td>
+        <td>{{ order_status_labels[order['status']] }}</td>
         <td>{{ order['updated_at'] }}</td>
       </tr>
     {% else %}
