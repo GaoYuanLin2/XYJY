@@ -14,6 +14,9 @@
     {% if g.user %}
       <a href="{{ url_for('items.new') }}">发布商品</a>
       <a href="{{ url_for('items.mine') }}">我的商品</a>
+      <a href="{{ url_for('social.favorites') }}">我的收藏</a>
+      <a href="{{ url_for('orders.index') }}">我的订单</a>
+      {% if g.user['role'] == 'admin' %}<a href="{{ url_for('admin.index') }}">后台</a>{% endif %}
       <form class="inline" method="post" action="{{ url_for('auth.logout') }}">
         <button class="linkbtn" type="submit">退出（{{ g.user['nickname'] }}）</button>
       </form>
@@ -29,6 +32,6 @@
 {% endfor %}
 {% block content %}{% endblock %}
 </main>
-<footer>信息系统项目管理实训 · 先跑再说队 · v1.0</footer>
+<footer>信息系统项目管理实训 · 先跑再说队 · v2.0</footer>
 </body>
 </html>

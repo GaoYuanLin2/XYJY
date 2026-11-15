@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}商品管理{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>商品管理</h2>
+  <form method="get" class="filters">
+    <select name="status">
+      <option value="">全部状态</option>
+      {% for value, label in status_labels.items() %}
+        <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn" type="submit">筛选</button>
+    <a class="btn ghost" href="{{ url_for('admin.index') }}">返回后台</a>
+  </form>
+  <table class="table">
+    <thead><tr><th>标题</th><th>发布者</th><th>价格</th><th>状态</th><th>审核说明</th><th>操作</th></tr></thead>
+    <tbody>
+    {% for item in items %}
+      <tr>
+        <td><a href="{{ url_for('items.detail', item_id=item['id']) }}">{{ item['title'] }}</a></td>
+        <td>{{ item['seller_name'] }}</td>
+        <td>{{ item['price'] | yuan }}</td>
+        <td>{{ status_labels[item['status']] }}</td>
+        <td>{{ item['review_note'] or '—' }}</td>
+        <td>
+          {% if item['status'] == 'pending' %}
+            <form method="post" action="{{ url_for('admin.approve', item_id=item['id']) }}" class="inline">
+              <button class="btn" type="submit">通过</button>
+            </form>
+          {% endif %}
+          {% if item['status'] in ('approved', 'pending') %}
+            <form method="post" action="{{ url_for('admin.offline', item_id=item['id']) }}" class="inline">
+              <button class="btn ghost" type="submit">下架</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6">没有符合条件的商品。</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -18,17 +18,60 @@
 
     <div class="actions">
       {% if g.user %}
+        <form method="post" action="{{ url_for('social.favorite', item_id=item['id']) }}" class="inline">
+          <button class="btn ghost" type="submit">{{ '取消收藏' if favorite else '收藏' }}</button>
+        </form>
         {% if item['seller_id'] == g.user['id'] and item['status'] != 'sold' %}
           <a class="btn ghost" href="{{ url_for('items.edit', item_id=item['id']) }}">修改</a>
           <form method="post" action="{{ url_for('items.offline', item_id=item['id']) }}" class="inline">
             <button class="btn ghost" type="submit">下架</button>
           </form>
         {% endif %}
+        {% if item['seller_id'] != g.user['id'] and item['status'] == 'approved' and not active_order %}
+          <form method="post" action="{{ url_for('orders.create', item_id=item['id']) }}" class="inline">
+            <button class="btn" type="submit">我想要，下单</button>
+          </form>
+        {% endif %}
+        {% if active_order %}
+          <a class="btn ghost" href="{{ url_for('orders.detail', order_id=active_order['id']) }}">查看进行中的订单</a>
+        {% endif %}
       {% else %}
-        <p class="hint"><a href="{{ url_for('auth.login') }}">登录</a>后可以发布、修改自己的商品。</p>
+        <p class="hint"><a href="{{ url_for('auth.login') }}">登录</a>后可以收藏、留言、下单。</p>
       {% endif %}
     </div>
   </div>
 </section>
 
+<section class="card">
+  <h3>留言（{{ messages | length }} 条）</h3>
+  {% set roots = messages | selectattr('parent_id', 'none') | list %}
+  {% for message in roots %}
+    <div class="msg">
+      <p><strong>{{ message['nickname'] }}</strong> <span class="meta">{{ message['created_at'] }}</span></p>
+      <p>{{ message['content'] }}</p>
+      {% for reply in messages if reply['parent_id'] == message['id'] %}
+        <div class="msg reply">
+          <p><strong>{{ reply['nickname'] }}</strong>（卖家回复） <span class="meta">{{ reply['created_at'] }}</span></p>
+          <p>{{ reply['content'] }}</p>
+        </div>
+      {% endfor %}
+      {% if g.user and item['seller_id'] == g.user['id'] and message['user_id'] != g.user['id'] %}
+        <form method="post" action="{{ url_for('social.add_message', item_id=item['id']) }}" class="inline">
+          <input type="hidden" name="parent_id" value="{{ message['id'] }}">
+          <input name="content" placeholder="回复这条留言" required>
+          <button class="btn ghost" type="submit">回复</button>
+        </form>
+      {% endif %}
+    </div>
+  {% else %}
+    <p class="hint">还没有人留言。</p>
+  {% endfor %}
+
+  {% if g.user %}
+    <form method="post" action="{{ url_for('social.add_message', item_id=item['id']) }}" class="msg-form">
+      <textarea name="content" rows="3" placeholder="问一下成色、能不能少、什么时候方便看货…" required></textarea>
+      <button class="btn" type="submit">发送留言</button>
+    </form>
+  {% endif %}
+</section>
 {% endblock %}

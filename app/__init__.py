@@ -25,10 +25,14 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    from . import auth, items
+    from . import admin, auth, items, orders, seed, social
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(items.bp)
+    app.register_blueprint(social.bp)
+    app.register_blueprint(orders.bp)
+    app.register_blueprint(admin.bp)
+    seed.init_app(app)
 
     @app.context_processor
     def inject_globals():

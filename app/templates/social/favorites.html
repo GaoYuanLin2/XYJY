@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}我的收藏{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>我的收藏（{{ items | length }} 件）</h2>
+  {% if items %}
+    <div class="grid">
+      {% for item in items %}
+      <article class="card item-card">
+        <a href="{{ url_for('items.detail', item_id=item['id']) }}">
+          {% if item['thumb'] %}
+            <img src="{{ url_for('static', filename=item['thumb']) }}" alt="{{ item['title'] }}">
+          {% else %}
+            <div class="noimg">暂无图片</div>
+          {% endif %}
+          <h3>{{ item['title'] }}</h3>
+        </a>
+        <p class="price">{{ item['price'] | yuan }}</p>
+        <p class="meta">{{ item['category'] }} · {{ item['condition'] }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="hint">还没有收藏，去集市逛逛吧。</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}后台{% endblock %}
+{% block content %}
+<section class="stats">
+  <div class="card stat"><span>{{ stats.pending }}</span><p>待审核商品</p></div>
+  <div class="card stat"><span>{{ stats.approved }}</span><p>在售商品</p></div>
+  <div class="card stat"><span>{{ stats.users }}</span><p>注册用户</p></div>
+  <div class="card stat"><span>{{ stats.orders }}</span><p>进行中订单</p></div>
+</section>
+
+<section class="card">
+  <h2>待审核（{{ pending_items | length }} 件）</h2>
+  <table class="table">
+    <thead><tr><th>标题</th><th>分类</th><th>价格</th><th>发布者</th><th>操作</th></tr></thead>
+    <tbody>
+    {% for item in pending_items %}
+      <tr>
+        <td><a href="{{ url_for('items.detail', item_id=item['id']) }}">{{ item['title'] }}</a></td>
+        <td>{{ item['category'] }}</td>
+        <td>{{ item['price'] | yuan }}</td>
+        <td>{{ item['seller_id'] }}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin.approve', item_id=item['id']) }}" class="inline">
+            <button class="btn" type="submit">通过</button>
+          </form>
+          <form method="post" action="{{ url_for('admin.reject', item_id=item['id']) }}" class="inline">
+            <input name="note" placeholder="驳回原因" required>
+            <button class="btn ghost" type="submit">驳回</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5">没有待审核商品。</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>最近订单</h2>
+  <table class="table">
+    <thead><tr><th>订单</th><th>商品</th><th>状态</th><th>更新时间</th></tr></thead>
+    <tbody>
+    {% for order in orders %}
+      <tr>
+        <td>#{{ order['id'] }}</td>
+        <td>{{ order['item_title'] }}</td>
+        <td>{{ status_labels[order['status']] if order['status'] in status_labels else order['status'] }}</td>
+        <td>{{ order['updated_at'] }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4">暂无订单。</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

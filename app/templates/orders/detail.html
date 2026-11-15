@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}订单 #{{ order['id'] }}{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>订单 #{{ order['id'] }} · {{ status_labels[order['status']] }}</h2>
+  <p>商品：<a href="{{ url_for('items.detail', item_id=order['item_id']) }}">{{ order['item_title'] }}</a></p>
+  <p>价格：{{ order['item_price'] | yuan }}</p>
+  <p>买家：{{ order['buyer_nickname'] }}　卖家：{{ order['seller_nickname'] }}</p>
+  <p class="meta">创建 {{ order['created_at'] }}　更新 {{ order['updated_at'] }}</p>
+
+  <div class="actions">
+    {% for action, target in actions %}
+      <form method="post" action="{{ url_for('orders.action', order_id=order['id']) }}" class="inline">
+        <input type="hidden" name="action" value="{{ action }}">
+        <button class="btn" type="submit">{{ action_labels[action] }}</button>
+      </form>
+    {% else %}
+      <p class="hint">该订单已结束，没有可执行的操作。</p>
+    {% endfor %}
+  </div>
+  <p class="hint">状态流转：待确认 → 已确认 → 已完成 / 已取消；已完成与已取消为终态。</p>
+</section>
+{% endblock %}
