@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}逛集市{% endblock %}
+{% block content %}
+<section class="card filter-card">
+  <form method="get" class="filters">
+    <input type="search" name="q" value="{{ keyword }}" placeholder="搜标题、描述、分类…">
+    <select name="category">
+      <option value="">全部分类</option>
+      {% for name in categories %}
+        <option value="{{ name }}" {% if category == name %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+    <select name="condition">
+      <option value="">全部成色</option>
+      {% for name in conditions %}
+        <option value="{{ name }}" {% if condition == name %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+    <select name="sort">
+      {% for value, label in sort_choices %}
+        <option value="{{ value }}" {% if sort == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn" type="submit">筛选</button>
+  </form>
+</section>
+
+{% if items %}
+<section class="grid">
+  {% for item in items %}
+  <article class="card item-card">
+    <a href="{{ url_for('items.detail', item_id=item['id']) }}">
+      {% if item['thumb'] %}
+        <img src="{{ url_for('static', filename=item['thumb']) }}" alt="{{ item['title'] }}">
+      {% else %}
+        <div class="noimg">暂无图片</div>
+      {% endif %}
+      <h3>{{ item['title'] }}</h3>
+    </a>
+    <p class="price">{{ item['price'] | yuan }}</p>
+    <p class="meta">{{ item['category'] }} · {{ item['condition'] }}</p>
+    {% if item['status'] == 'sold' %}<p class="tag">已售出</p>{% endif %}
+  </article>
+  {% endfor %}
+</section>
+
+{% if next_cursor %}
+<p class="more">
+  <a class="btn" href="{{ url_for('items.index', q=keyword, category=category, condition=condition, sort=sort, cursor=next_cursor) }}">下一页</a>
+</p>
+{% endif %}
+{% else %}
+<section class="card empty">
+  <h2>没有找到符合条件的商品</h2>
+  <p>换个关键词，或者清掉分类与成色筛选再试。</p>
+</section>
+{% endif %}
+{% endblock %}

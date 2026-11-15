@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}注册{% endblock %}
+{% block content %}
+<section class="card form-card">
+  <h2>注册校园集市账号</h2>
+  <form method="post">
+    <label>用户名<input name="username" value="{{ request.form.get('username', '') }}" required></label>
+    <label>昵称<input name="nickname" value="{{ request.form.get('nickname', '') }}" required></label>
+    <label>密码<input type="password" name="password" required></label>
+    <label>确认密码<input type="password" name="password2" required></label>
+    <button class="btn" type="submit">注册</button>
+  </form>
+  <p class="hint">用户名 3—20 位字母、数字或下划线；密码至少 6 位。</p>
+</section>
+{% endblock %}

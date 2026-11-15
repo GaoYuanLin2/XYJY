@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}我的商品{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>我的商品（{{ items | length }} 件）</h2>
+  <table class="table">
+    <thead>
+      <tr><th>标题</th><th>价格</th><th>分类</th><th>状态</th><th>审核说明</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+      <tr>
+        <td><a href="{{ url_for('items.detail', item_id=item['id']) }}">{{ item['title'] }}</a></td>
+        <td>{{ item['price'] | yuan }}</td>
+        <td>{{ item['category'] }}</td>
+        <td>{{ status_labels[item['status']] }}</td>
+        <td>{{ item['review_note'] or '—' }}</td>
+        <td>
+          {% if item['status'] != 'sold' %}
+            <a href="{{ url_for('items.edit', item_id=item['id']) }}">修改</a>
+          {% endif %}
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6">还没有发布过商品。</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

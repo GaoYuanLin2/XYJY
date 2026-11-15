@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}登录{% endblock %}
+{% block content %}
+<section class="card form-card">
+  <h2>登录</h2>
+  <form method="post">
+    <label>用户名<input name="username" value="{{ request.form.get('username', '') }}" required></label>
+    <label>密码<input type="password" name="password" required></label>
+    <button class="btn" type="submit">登录</button>
+  </form>
+  <p class="hint">还没有账号？<a href="{{ url_for('auth.register') }}">去注册</a></p>
+</section>
+{% endblock %}

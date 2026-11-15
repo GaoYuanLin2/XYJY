@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}页面不存在{% endblock %}
+{% block content %}
+<section class="card empty">
+  <h2>商品不存在或已下架</h2>
+  <p>它可能被发布者下架，或者正在等待审核。</p>
+  <p><a class="btn" href="{{ url_for('items.index') }}">回到集市</a></p>
+</section>
+{% endblock %}
